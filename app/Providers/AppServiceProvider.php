@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\{Date, DB, Http, URL, Vite};
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Model::shouldBeStrict();
+        Model::automaticallyEagerLoadRelationships();
+        Vite::useAggressivePrefetching();
+        Http::preventStrayRequests();
+        Date::use(CarbonImmutable::class);
+
+        if ($this->app->isProduction()) {
+            DB::prohibitDestructiveCommands();
+            URL::forceHttps();
+        }
     }
 }
