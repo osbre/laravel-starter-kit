@@ -59,11 +59,11 @@ class InviteTeamMember implements InvitesTeamMembers
     /**
      * Get the validation rules for inviting a team member.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, mixed>
      */
     protected function rules(Team $team): array
     {
-        return array_filter([
+        return [
             'email' => [
                 'required', 'email',
                 Rule::unique(Jetstream::teamInvitationModel())->where(function (Builder $query) use ($team) {
@@ -72,8 +72,8 @@ class InviteTeamMember implements InvitesTeamMembers
             ],
             'role' => Jetstream::hasRoles()
                             ? ['required', 'string', new Role]
-                            : null,
-        ]);
+                            : [],
+        ];
     }
 
     /**
