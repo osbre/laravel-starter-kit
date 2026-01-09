@@ -5,7 +5,9 @@ namespace {{ namespace }};
 use {{ namespacedModel }};
 use Illuminate\Http\Request;
 use {{ namespacedParentModel }};
+use Spatie\RouteAttributes\Attributes\ApiResource;
 
+#[ApiResource('{{ parentModelVariable }}.{{ modelVariable }}')]
 class {{ class }}
 {
     public function index({{ parentModel }} ${{ parentModelVariable }})

@@ -3,7 +3,9 @@
 namespace {{ namespace }};
 
 use Illuminate\Http\Request;
+use Spatie\RouteAttributes\Attributes\ApiResource;
 
+#[ApiResource('{{ resource }}')]
 class {{ class }}
 {
     public function index()
