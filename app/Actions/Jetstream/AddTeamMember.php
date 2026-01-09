@@ -6,7 +6,7 @@ use App\Models\Team;
 use App\Models\User;
 use Closure;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator;
 use Laravel\Jetstream\Contracts\AddsTeamMembers;
 use Laravel\Jetstream\Events\AddingTeamMember;
 use Laravel\Jetstream\Events\TeamMemberAdded;
@@ -40,7 +40,7 @@ class AddTeamMember implements AddsTeamMembers
      */
     protected function validate(Team $team, string $email, ?string $role): void
     {
-        Validator::make([
+        validator([
             'email' => $email,
             'role' => $role,
         ], $this->rules(), [
@@ -53,7 +53,7 @@ class AddTeamMember implements AddsTeamMembers
     /**
      * Get the validation rules for adding a team member.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, array<int, \Illuminate\Contracts\Validation\Rule|string>|string>
      */
     protected function rules(): array
     {
@@ -70,7 +70,7 @@ class AddTeamMember implements AddsTeamMembers
      */
     protected function ensureUserIsNotAlreadyOnTeam(Team $team, string $email): Closure
     {
-        return function ($validator) use ($team, $email) {
+        return function (Validator $validator) use ($team, $email): void {
             $validator->errors()->addIf(
                 $team->hasUserWithEmail($email),
                 'email',

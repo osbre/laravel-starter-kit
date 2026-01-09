@@ -11,7 +11,7 @@ class TeamInvitation extends JetstreamTeamInvitation
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'email',
@@ -20,9 +20,13 @@ class TeamInvitation extends JetstreamTeamInvitation
 
     /**
      * Get the team that the invitation belongs to.
+     * @return BelongsTo<Team, $this>
      */
     public function team(): BelongsTo
     {
-        return $this->belongsTo(Jetstream::teamModel());
+        /** @var class-string<Team> $teamModel */
+        $teamModel = Jetstream::teamModel();
+
+        return $this->belongsTo($teamModel);
     }
 }

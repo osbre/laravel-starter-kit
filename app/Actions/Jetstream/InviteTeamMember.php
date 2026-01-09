@@ -3,17 +3,18 @@
 namespace App\Actions\Jetstream;
 
 use App\Models\Team;
+use App\Models\TeamInvitation;
 use App\Models\User;
 use Closure;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 use Laravel\Jetstream\Contracts\InvitesTeamMembers;
 use Laravel\Jetstream\Events\InvitingTeamMember;
 use Laravel\Jetstream\Jetstream;
-use Laravel\Jetstream\Mail\TeamInvitation;
+use Laravel\Jetstream\Mail\TeamInvitation as TeamInvitationMail;
 use Laravel\Jetstream\Rules\Role;
 
 class InviteTeamMember implements InvitesTeamMembers
@@ -29,12 +30,13 @@ class InviteTeamMember implements InvitesTeamMembers
 
         InvitingTeamMember::dispatch($team, $email, $role);
 
+        /** @var TeamInvitation $invitation */
         $invitation = $team->teamInvitations()->create([
             'email' => $email,
             'role' => $role,
         ]);
 
-        Mail::to($email)->send(new TeamInvitation($invitation));
+        Mail::to($email)->send(new TeamInvitationMail($invitation));
     }
 
     /**
@@ -42,7 +44,7 @@ class InviteTeamMember implements InvitesTeamMembers
      */
     protected function validate(Team $team, string $email, ?string $role): void
     {
-        Validator::make([
+        validator([
             'email' => $email,
             'role' => $role,
         ], $this->rules($team), [
@@ -55,7 +57,7 @@ class InviteTeamMember implements InvitesTeamMembers
     /**
      * Get the validation rules for inviting a team member.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, array<int, \Illuminate\Contracts\Validation\Rule|string>|string>
      */
     protected function rules(Team $team): array
     {
@@ -77,7 +79,7 @@ class InviteTeamMember implements InvitesTeamMembers
      */
     protected function ensureUserIsNotAlreadyOnTeam(Team $team, string $email): Closure
     {
-        return function ($validator) use ($team, $email) {
+        return function (Validator $validator) use ($team, $email): void {
             $validator->errors()->addIf(
                 $team->hasUserWithEmail($email),
                 'email',
