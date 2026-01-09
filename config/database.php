@@ -38,11 +38,17 @@ return [
             'url' => env('DB_URL'),
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
-            'synchronous' => null,
-            'transaction_mode' => 'DEFERRED',
+            'foreign_key_constraints' => true,
+            'busy_timeout' => 5000,
+            'journal_mode' => 'wal',
+            'synchronous' => 'normal',
+            'transaction_mode' => 'IMMEDIATE',
+            'pragmas' => [
+                'foreign_keys' => 1,
+                'temp_store' => 'memory',
+                'cache_size' => -1048576,
+                'wal_autocheckpoint' => 1000,
+            ],
         ],
 
         'mysql' => [
