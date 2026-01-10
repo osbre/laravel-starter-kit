@@ -22,7 +22,7 @@ return [
             'middleware' => 'api',
         ],
         app_path('Http/Controllers/Dashboard') => [
-            'middleware' => ['web', AuthenticateSession::class, 'verified'],
+            'middleware' => ['web', 'auth', AuthenticateSession::class, 'verified'],
         ],
         app_path('Http/Controllers/Guest') => [
             'middleware' => ['web'],
